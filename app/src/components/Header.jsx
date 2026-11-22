@@ -12,7 +12,7 @@ export default function Header() {
 
   return (
     <header>
-      <Link to="/" className="logo">ミニSNS</Link>
+      <Link to="/" className="logo">ミニSNS（β）</Link>
       <nav>
         <Link to="/">タイムライン</Link>
         <Link to="/me">マイページ</Link>
