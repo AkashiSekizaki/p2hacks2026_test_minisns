@@ -1,56 +1,39 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "./firebase";
+import { createContext, useContext, useState } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "./firebase";
 
 const AuthContext = createContext(null);
 
-// Firebase のログイン状態を onAuthStateChanged で 1 か所だけ購読し、
-// アプリ全体に { uid, email, displayName } を配る。
-// 新規登録でも既存ユーザーのログインでも、同じ経路を通る。
-async function toAppUser(fbUser) {
-  if (!fbUser) return null;
-  let displayName = fbUser.displayName;
-  if (!displayName) {
-    // users/{uid} が無い既存アカウント（コンソールで作成）でも落ちないようにする
-    try {
-      const snap = await getDoc(doc(db, "users", fbUser.uid));
-      displayName = snap.exists() ? snap.data().displayName : null;
-    } catch {
-      displayName = null;
-    }
+const STORAGE_KEY = "currentUser";
+
+// localStorage からユーザー情報を読む
+function loadUser() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY));
+  } catch {
+    return null;
   }
-  return {
-    uid: fbUser.uid,
-    email: fbUser.email,
-    displayName: displayName,
-  };
 }
 
+// ログインしているユーザーの情報（{ uid, email, displayName }）を
+// アプリ全体で共有するためのContext
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(loadUser);
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (fbUser) => {
-      setUser(await toAppUser(fbUser));
-      setLoading(false);
-    });
-    return unsub;
-  }, []);
-
-  // 登録直後にプロフィール(displayName)を更新したあと、Context に反映する
-  const refreshUser = async () => {
-    await auth.currentUser?.reload();
-    setUser(await toAppUser(auth.currentUser));
+  // ユーザー情報を保存する（Context と localStorage の両方）
+  const saveUser = (u) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
+    setUser(u);
   };
 
-  const logout = () => signOut(auth);
-
-  if (loading) return <p>読み込み中...</p>;
+  const logout = async () => {
+    await signOut(auth);
+    localStorage.removeItem(STORAGE_KEY);
+    setUser(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ user, refreshUser, logout }}>
+    <AuthContext.Provider value={{ user, saveUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

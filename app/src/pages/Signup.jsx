@@ -10,7 +10,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState(null);
   const [error, setError] = useState("");
-  const { refreshUser } = useAuth();
+  const { saveUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,8 +21,8 @@ export default function Signup() {
       await updateProfile(cred.user, { displayName });
       await setDoc(doc(db, "users", cred.user.uid), { displayName });
 
-      // localStorage には保存しない。Firebase の状態を Context に反映するだけ
-      await refreshUser();
+      // 登録したユーザーの情報をアプリ内で使えるように保存する
+      saveUser({ uid: cred.user.uid, email: cred.user.email, displayName });
       navigate("/");
     } catch (err) {
       setError("登録に失敗しました: " + err.message);
