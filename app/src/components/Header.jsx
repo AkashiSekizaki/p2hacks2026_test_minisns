@@ -15,7 +15,7 @@ export default function Header() {
       <Link to="/" className="logo">ミニSNS（β）</Link>
       <nav>
         <Link to="/">タイムライン</Link>
-        <Link to="/me">マイページ</Link>
+        <Link to="/me">プロフィール</Link>
         {user ? (
           <button onClick={handleLogout}>ログアウト</button>
         ) : (

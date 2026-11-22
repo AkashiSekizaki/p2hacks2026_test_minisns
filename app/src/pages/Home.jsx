@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   addDoc,
   collection,
@@ -16,6 +16,7 @@ export default function Home() {
   const [posts, setPosts] = useState([]);
   const [text, setText] = useState("");
   const [error, setError] = useState("");
+  const [sortOrder, setSortOrder] = useState("desc");
 
   // 投稿一覧をリアルタイムに取得（新しい順）
   useEffect(() => {
@@ -27,6 +28,12 @@ export default function Home() {
     );
     return unsub;
   }, []);
+
+  // 並び順の切り替え（取得は新しい順のまま、表示だけ入れ替える）
+  const sortedPosts = useMemo(
+    () => (sortOrder === "desc" ? posts : [...posts].reverse()),
+    [posts, sortOrder],
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,8 +67,20 @@ export default function Home() {
       </form>
 
       <h2>タイムライン</h2>
-      {posts.length === 0 && <p>まだ投稿がありません。</p>}
-      {posts.map((p) => (
+      <div className="toolbar">
+        <label>
+          並び順
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+          >
+            <option value="desc">新しい順</option>
+            <option value="asc">古い順</option>
+          </select>
+        </label>
+      </div>
+      {sortedPosts.length === 0 && <p>まだ投稿がありません。</p>}
+      {sortedPosts.map((p) => (
         <PostCard key={p.id} post={p} currentUid={user?.uid} />
       ))}
     </div>

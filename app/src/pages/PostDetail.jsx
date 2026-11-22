@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../AuthContext.jsx";
+import { formatRelativeTime } from "../utils/formatTime.js";
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -74,7 +75,10 @@ export default function PostDetail() {
       ) : (
         <p>{post.text}</p>
       )}
-      <small>投稿者: {post.authorName ?? "名無し"}</small>
+      <small>
+        投稿者: {post.authorName || "名無し"} ・{" "}
+        {formatRelativeTime(post.createdAt?.toDate())}
+      </small>
     </div>
   );
 }
