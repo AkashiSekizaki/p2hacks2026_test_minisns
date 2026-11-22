@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ユーザー情報: ログイン済みなら閲覧可、書き込みは本人のみ
+    match /users/{uid} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // 投稿: 閲覧・投稿はログイン済み、編集・削除は投稿者本人のみ
+    match /posts/{postId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.authorUid == request.auth.uid;
+      allow update, delete: if request.auth != null
+                    && resource.data.authorUid == request.auth.uid;
+    }
+  }
+}
