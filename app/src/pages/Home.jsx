@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import {
   addDoc,
   collection,
@@ -10,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../AuthContext.jsx";
+import PostCard from "../components/PostCard.jsx";
 
 export default function Home() {
   const { user } = useAuth();
@@ -62,18 +62,7 @@ export default function Home() {
       <h2>タイムライン</h2>
       {posts.length === 0 && <p>まだ投稿がありません。</p>}
       {posts.map((p) => (
-        <article key={p.id} className="card">
-          <p>{p.text}</p>
-          <small>
-            {(p.authorName === "" || p.authorName === null) && "名無し"} ・{" "}
-            {p.createdAt?.toDate().toLocaleString("ja-JP") ?? "送信中"}
-          </small>
-          <div>
-            <Link to={`/posts/${p.id}`}>
-              詳細{p.authorUid === user?.uid && "・編集"}
-            </Link>
-          </div>
-        </article>
+        <PostCard key={p.id} post={p} currentUid={user?.uid} />
       ))}
     </div>
   );
