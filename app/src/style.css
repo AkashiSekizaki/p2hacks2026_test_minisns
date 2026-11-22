@@ -32,3 +32,5 @@ button { padding: 8px 14px; border: 0; border-radius: 4px; background: #2563eb; 
 button.danger { background: #dc2626; margin-left: 8px; }
 .error { color: #b91c1c; }
 small { color: #666; }
+.search { margin-bottom: 8px; }
+.count { color: #666; font-size: 0.85rem; margin: 0 0 8px; }

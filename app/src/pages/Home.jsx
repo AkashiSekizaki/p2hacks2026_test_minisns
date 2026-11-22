@@ -10,12 +10,14 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../AuthContext.jsx";
+import SearchBox from "../components/SearchBox.jsx";
 
 export default function Home() {
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [text, setText] = useState("");
   const [error, setError] = useState("");
+  const [keyword, setKeyword] = useState("");
 
   // 投稿一覧をリアルタイムに取得（新しい順）
   useEffect(() => {
@@ -27,6 +29,12 @@ export default function Home() {
     );
     return unsub;
   }, []);
+
+  // 検索キーワードで絞り込み（本文・投稿者名）
+  const filtered = posts.filter(
+    (p) =>
+      p.text?.includes(keyword) || (p.authorName ?? "").includes(keyword),
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,8 +68,10 @@ export default function Home() {
       </form>
 
       <h2>タイムライン</h2>
-      {posts.length === 0 && <p>まだ投稿がありません。</p>}
-      {posts.map((p) => (
+      <SearchBox value={keyword} onChange={setKeyword} />
+      <p className="count">{filtered.length}件</p>
+      {filtered.length === 0 && <p>該当する投稿がありません。</p>}
+      {filtered.map((p) => (
         <article key={p.id} className="card">
           <p>{p.text}</p>
           <small>
