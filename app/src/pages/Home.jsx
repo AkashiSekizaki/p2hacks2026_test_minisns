@@ -48,7 +48,7 @@ export default function Home() {
   return (
     <div>
       <form onSubmit={handleSubmit} className="card">
-        <h2>投稿する</h2>
+        <h2>共有する</h2>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
