@@ -52,7 +52,7 @@ export default function Home() {
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="いまどうしてる？"
+          placeholder="今日あったことを書こう"
           required
         />
         <button type="submit">投稿</button>
