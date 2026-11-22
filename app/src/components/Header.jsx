@@ -16,6 +16,7 @@ export default function Header() {
       <nav>
         <Link to="/">タイムライン</Link>
         <Link to="/me">マイページ</Link>
+        {user && <span className="greeting">{user.displayName} さん</span>}
         {user ? (
           <button onClick={handleLogout}>ログアウト</button>
         ) : (

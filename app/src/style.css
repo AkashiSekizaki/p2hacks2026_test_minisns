@@ -34,3 +34,5 @@ button.danger { background: #dc2626; margin-left: 8px; }
 small { color: #666; }
 .search { margin-bottom: 8px; }
 .count { color: #666; font-size: 0.85rem; margin: 0 0 8px; }
+.counter { align-self: flex-end; color: #666; font-size: 0.8rem; }
+button:disabled { background: #9ca3af; cursor: not-allowed; }

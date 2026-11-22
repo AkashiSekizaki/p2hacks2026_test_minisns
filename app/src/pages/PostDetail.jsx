@@ -64,8 +64,10 @@ export default function PostDetail() {
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
+            maxLength={140}
             required
           />
+          <span className="counter">{text.length}/140</span>
           <button type="submit">更新</button>
           <button type="button" onClick={handleDelete} className="danger">
             削除
@@ -74,7 +76,10 @@ export default function PostDetail() {
       ) : (
         <p>{post.text}</p>
       )}
-      <small>投稿者: {post.authorName ?? "名無し"}</small>
+      <small>
+        投稿者: {post.authorName || "名無し"}
+        {post.updatedAt?.seconds > post.createdAt?.seconds && "（編集済み）"}
+      </small>
     </div>
   );
 }

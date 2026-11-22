@@ -12,6 +12,12 @@ import { db } from "../firebase";
 import { useAuth } from "../AuthContext.jsx";
 import SearchBox from "../components/SearchBox.jsx";
 
+const MAX_LENGTH = 140;
+
+// 更新日時が作成日時より後なら「編集済み」とみなす
+const isEdited = (p) =>
+  p.updatedAt && p.createdAt && p.updatedAt.seconds > p.createdAt.seconds;
+
 export default function Home() {
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
@@ -61,9 +67,15 @@ export default function Home() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="今日あったことを書こう"
+          maxLength={MAX_LENGTH}
           required
         />
-        <button type="submit">投稿</button>
+        <span className="counter">
+          {text.length}/{MAX_LENGTH}
+        </span>
+        <button type="submit" disabled={text.trim() === ""}>
+          投稿
+        </button>
         {error && <p className="error">{error}</p>}
       </form>
 
@@ -75,8 +87,9 @@ export default function Home() {
         <article key={p.id} className="card">
           <p>{p.text}</p>
           <small>
-            {(p.authorName === "" || p.authorName === null) && "名無し"} ・{" "}
+            {p.authorName || "名無し"} ・{" "}
             {p.createdAt?.toDate().toLocaleString("ja-JP") ?? "送信中"}
+            {isEdited(p) && "（編集済み）"}
           </small>
           <div>
             <Link to={`/posts/${p.id}`}>
